@@ -11,16 +11,15 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
   
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [auth, setAuth] = React.useState('');
-  const Acontext: Auth = useContext(AuthContext)  
+  
+  const Ucontext: User = React.useContext(UserContext);
+  const Acontext: Auth = React.useContext(AuthContext);
 
-  useLayoutEffect(() => {
-    if (Acontext.currentUser) {      
+  useEffect(() => {
+    if (Ucontext) {      
       navigation.navigate('Dashboard');
-    } else {
-     alert("reload unsuccessful")
     }
-  },[navigation, Acontext]);
+  },[Ucontext])
   
   
  

@@ -6,6 +6,7 @@ import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from "firebase/firestore";
+import { LogBox } from 'react-native';
 
 
 import { useState } from 'react';
@@ -22,23 +23,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const data = getFirestore(app);
 
-import { browserLocalPersistence, getAuth, inMemoryPersistence, onAuthStateChanged, setPersistence, User, } from 'firebase/auth';
+import { Auth, browserLocalPersistence, getAuth, inMemoryPersistence, onAuthStateChanged, setPersistence, User,  } from 'firebase/auth';
 import React from 'react';
 
 
+
 export default function App() {
+  LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ']);
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();  
   
   const [user, setUser] = useState<User | undefined>();
-  const auth = getAuth();
-  setPersistence(auth, browserLocalPersistence)
-    
+  const auth = getAuth();   
+ 
 
   if (app) {
     onAuthStateChanged(auth, (user) => {
       if (user != null) {
-        setUser(user)
+        setUser(user)        
       }
       
     });
@@ -57,3 +59,5 @@ export default function App() {
     );
   }
 }
+
+
