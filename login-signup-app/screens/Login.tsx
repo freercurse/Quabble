@@ -1,22 +1,24 @@
 import React, { useContext, useEffect, useLayoutEffect } from 'react';
 import { Button, LogBox, StyleSheet, TextInput } from 'react-native';
-import {signInWithEmailAndPassword,Auth, UserCredential } from 'firebase/auth';
+import {signInWithEmailAndPassword,Auth, UserCredential, User } from 'firebase/auth';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
-import { AuthContext } from '../navigation';
+import { AuthContext, UserContext } from '../navigation';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
-  LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage']);
+  LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ']);
   
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [auth, setAuth] = React.useState('');
-  const Acontext: Auth = useContext(AuthContext)
+  const Acontext: Auth = useContext(AuthContext)  
 
   useLayoutEffect(() => {
-    if (Acontext.currentUser) {
-      
+    if (Acontext.currentUser) {      
       navigation.navigate('Dashboard');
+    } else {
+     alert("reload unsuccessful")
     }
   },[navigation, Acontext]);
   
@@ -45,7 +47,8 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
     
     if (user.user.emailVerified) {
       setUsername('');
-      setPassword('');      
+      setPassword('');     
+     
       navigation.navigate('Dashboard');
     } else {
       alert('Email not verified! \nPlease verify before logging in')        

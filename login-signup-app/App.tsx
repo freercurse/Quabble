@@ -22,7 +22,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const data = getFirestore(app);
 
-import { getAuth, onAuthStateChanged, User, } from 'firebase/auth';
+import { browserLocalPersistence, getAuth, inMemoryPersistence, onAuthStateChanged, setPersistence, User, } from 'firebase/auth';
 import React from 'react';
 
 
@@ -32,7 +32,7 @@ export default function App() {
   
   const [user, setUser] = useState<User | undefined>();
   const auth = getAuth();
-  
+  setPersistence(auth, browserLocalPersistence)
     
 
   if (app) {
