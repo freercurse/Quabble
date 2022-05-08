@@ -17,6 +17,7 @@ import { Auth, User } from 'firebase/auth';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
+import Game from '../screens/Game';
 import FAQ from '../screens/FAQ';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import Login from '../screens/Login';
@@ -24,6 +25,7 @@ import Register from '../screens/Register';
 import Chat from '../screens/Chat';
 import Home from '../screens/Home';
 import { Firestore } from 'firebase/firestore';
+
 
 
 export const AuthContext = React.createContext<Auth | undefined>(undefined);
@@ -138,6 +140,13 @@ function DashboardBottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'Chat'>) => ({
           title: 'Chat',
           tabBarIcon: ({ color }) => <TabBarIcon name="message1" color={color} />,          
+        })} />
+      <BottomTab.Screen
+        name="Game"
+        component={Game}
+        options={({ navigation }: RootTabScreenProps<'Game'>) => ({
+          title: 'Game',
+          tabBarIcon: ({ color }) => <TabBarIcon name="play" color={color} />,          
         })} />
             
       

@@ -7,7 +7,7 @@
       },
       "package": "host.quabble.client",
       "permissions": [],
-      "versionCode": 5
+      "versionCode": 6
     },
     "plugins": [
       [
@@ -38,7 +38,7 @@
       "fallbackToCacheTimeout": 0
     },
     "userInterfaceStyle": "automatic",
-    "version": "0.83.1",
+    "version": "0.84.0",
     "web": {
       "favicon": "./assets/images/icon.png"
     }

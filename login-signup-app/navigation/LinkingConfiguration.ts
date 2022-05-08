@@ -29,6 +29,7 @@ const linking: LinkingOptions<RootStackParamList> = {
       },      
       Dashboard: {
         screens: {
+          Game: 'Game',
           Chat: 'Chat',
           Home: 'Home',
         }

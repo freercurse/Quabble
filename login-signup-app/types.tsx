@@ -31,6 +31,7 @@ export type RootTabParamList = {
   Register: undefined; 
   Chat: undefined;
   Home: undefined;
+  Game: undefined;
   auth: Auth;
 };
 
