@@ -9,8 +9,9 @@ import { AuthContext, UserContext } from '../navigation';
 
 import Pusher from 'pusher-js/react-native';
 import shortid  from 'shortid';
-import Spinner from 'react-native-spinkit';
+import { Bounce } from 'react-native-animated-spinkit';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
+import { Board } from '../components/Board';
 
 
  
@@ -27,7 +28,7 @@ export default function Game() {
 
   const [username, setUsername] = React.useState(Ucontext.displayName);
   const [id, setId] = React.useState("");
-  const [piece, setPiece] = React.useState(Ucontext.displayName);
+  const [piece, setPiece] = React.useState<number>(99);
   const [rival, setRival] = React.useState('');
   const [playing, setPlaying] = React.useState(false);
   const [prompt, setPrompt] = React.useState(false);
@@ -35,13 +36,18 @@ export default function Game() {
   const [creator, setCreator] = React.useState(false);
 
   const isInitialMount = useRef(true);
+  Pusher.logToConsole = true;
 
   useEffect(() => {
     if (isInitialMount.current) {
-      const pusher = new Pusher('3563919e02918c0b1a8b', {
+      const pushers = new Pusher('3563919e02918c0b1a8b', {
         cluster: 'eu',
+        userAuthentication: {
+          endpoint: Acontext.config.apiHost,
+          transport: "ajax"
+        }
       });
-      setPusher(pusher)
+      setPusher(pushers)
       isInitialMount.current = false;
     } else {
 
@@ -53,7 +59,7 @@ export default function Game() {
         })
         setBinded(true)
       }
-
+      
       if (creator) {
         channel.trigger('client-joined', {
           username: Ucontext.displayName
@@ -66,7 +72,8 @@ export default function Game() {
   const onPressCreateRoom = () => {
 
     let room_id = shortid.generate(); // generate a unique ID for the room
-    setChannel(pusher.subscribe('private-' + room_id)); // subscribe to a channel
+    let channel = pusher.subscribe('private-' + room_id)
+    setChannel(channel); // subscribe to a channel
 
     // alert the user of the ID that the friend needs to enter 
     Alert.alert(
@@ -80,7 +87,7 @@ export default function Game() {
 
     // show loading state while waiting for someone to join the room
    
-      setPiece('X') // room creator is always X
+      setPiece(1) // room creator is always X
       setWaiting(true)
       setCreator(true)   
 
@@ -93,13 +100,14 @@ export default function Game() {
  
 
   const joinRoom = (room_id : string) => {
-    setChannel(pusher.subscribe('private-' + room_id));
+    let channel = pusher.subscribe('private-' + room_id)
+    setChannel(channel); // subscribe to a channel
     // inform the room creator that a rival has joined
     channel.trigger('client-joined', {
       username: username
     });
     
-    setPiece('O')
+    setPiece(0)
     setPrompt(false)
     setWaiting(true) // wait for the room creator to confirm   
   }
@@ -108,7 +116,7 @@ export default function Game() {
     // reset to the default state
     
       setUsername('')
-      setPiece('')
+      setPiece(99)
       setRival('')
       setPlaying(false)
       setPrompt(false)
@@ -122,19 +130,19 @@ export default function Game() {
 
   return (
     <View style={styles.container}>      
-
-      <View style={styles.button_container}>
-        <Button
-          onPress={() => onPressCreateRoom()}
-          title="Create Room"
-          color="#4c87ea"          
-        />
-        <Button
-          onPress={() => onPressJoinRoom()}
-          title="Join Room"
-          color="#1C1C1C"          
-        />
-      </View>
+      {!waiting && !playing &&
+        <View style={styles.button_container}>
+          <Button
+            onPress={() => onPressCreateRoom()}
+            title="Create Room"
+            color="#4c87ea"
+          />
+          <Button
+            onPress={() => onPressJoinRoom()}
+            title="Join Room"
+            color="#1C1C1C"
+          />
+        </View>}
       
       {prompt && <ConfirmDialog
         title="Enter The room Name."
@@ -150,6 +158,32 @@ export default function Game() {
           <TextInput defaultValue={id} onChangeText={(id: string) => setId(id)} style={styles.input} />
         </View>
       </ConfirmDialog>}
+
+      {waiting &&
+        <View>
+        <Bounce
+          style={styles.spinner}          
+          size={75}          
+          color={"#549eff"}        
+        />
+        <Button
+          onPress={() => { setWaiting(false) }}
+            title="Cancel"
+            color="#4c87ea"
+        />
+        </View>
+      }
+
+      {playing &&
+        <Board
+          channel={channel}
+          username={username}
+          piece={piece}
+          rival_username={rival}
+          is_room_creator={creator}
+          endGame={endGame}
+        />
+      }
     </View>
   );
 }
