@@ -58,7 +58,7 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
         setLoading(false);
       }
     } catch (e) {
-      console.log(e);
+     
       setLoading(false);
       alert(e);
       
