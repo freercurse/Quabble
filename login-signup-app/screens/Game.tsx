@@ -41,11 +41,13 @@ export default function Game() {
   useEffect(() => {
     if (isInitialMount.current) {
       const pushers = new Pusher('3563919e02918c0b1a8b', {
-        cluster: 'eu',
-        userAuthentication: {
-          endpoint: Acontext.config.apiHost,
-          transport: "ajax"
-        }
+        cluster: 'eu',        
+        authEndpoint: Acontext.config.apiHost,
+        auth: {
+          headers: {
+            Authorization: Acontext.config.apiKey
+          }
+        }        
       });
       setPusher(pushers)
       isInitialMount.current = false;
