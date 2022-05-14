@@ -131,8 +131,8 @@ function DashboardBottomTabNavigator() {
         name="Home"
         component={Home}
         options={({ navigation }: RootTabScreenProps<'Home'>) => ({
-          title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="message1" color={color} />,          
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcon name="profile" color={color} />,          
         })} />
       <BottomTab.Screen
         name="Chat"
@@ -145,7 +145,7 @@ function DashboardBottomTabNavigator() {
         name="Game"
         component={Game}
         options={({ navigation }: RootTabScreenProps<'Game'>) => ({
-          title: 'Game',
+          title: 'Tic-Tac-Toe',
           tabBarIcon: ({ color }) => <TabBarIcon name="play" color={color} />,          
         })} />
             

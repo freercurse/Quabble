@@ -1,231 +1,175 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Component, useEffect } from 'react';
-import { Alert, Button, LogBox, StyleSheet, TextInput } from 'react-native';
-
+import { StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Auth, User } from 'firebase/auth';
-
 import { Text, View } from '../components/Themed';
 import { AuthContext, UserContext } from '../navigation';
-
-import Pusher from 'pusher-js/react-native';
-import shortid  from 'shortid';
-import { Bounce } from 'react-native-animated-spinkit';
-import { ConfirmDialog } from 'react-native-simple-dialogs';
 import { Board } from '../components/Board';
 
 
- 
 
 export default function Game() {
-  LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ']);
+  const [playerTurn, changeTurn] = useState(true);
+  const [end, endGame] = useState(true);
+  const [modal, toggleModal] = useState(true);
 
-  const Ucontext: User = React.useContext(UserContext);
-  const Acontext: Auth = React.useContext(AuthContext);
+  //Result message for winner and tie games
+  const [result, setResult] = useState('');
 
-  const [pusher, setPusher] = React.useState<any>();
-  const [channel, setChannel] = React.useState();
-  const [binded, setBinded] = React.useState(false);
+  //Turns dictionary to store turns taken
+  const [turns, setTurns] = useState<Array<String>>([]);
 
-  const [username, setUsername] = React.useState(Ucontext.displayName);
-  const [id, setId] = React.useState("");
-  const [piece, setPiece] = React.useState<number>(99);
-  const [rival, setRival] = React.useState('');
-  const [playing, setPlaying] = React.useState(false);
-  const [prompt, setPrompt] = React.useState(false);
-  const [waiting, setWaiting] = React.useState(false);
-  const [creator, setCreator] = React.useState(false);
+  //Hook toggles for components to render and switch players
+  const togglePlayer = () => changeTurn(!playerTurn);
+  const toggleGame = () => endGame(!end);
+  const triggerModal = () => toggleModal(!modal)
 
-  const isInitialMount = useRef(true);
-  Pusher.logToConsole = true;
+  //Hook to set a new game
+  const newGame = () => {
+    setTurns([]);
+    endGame(false);
+    toggleModal(false);
+    changeTurn(true);
+  };
 
-  useEffect(() => {
-    if (isInitialMount.current) {
-      const pushers = new Pusher('3563919e02918c0b1a8b', {
-        cluster: 'eu',        
-        authEndpoint: Acontext.config.apiHost,
-        auth: {
-          headers: {
-            Authorization: Acontext.config.apiKey
-          }
-        }        
-      });
-      setPusher(pushers)
-      isInitialMount.current = false;
-    } else {
+  //Hook to end the game and render components needed
+  const finishGame = () => {
+    endGame(true);
+    triggerModal();
+  };
 
-      if (waiting && !binded) {
-        channel.bind('client-joined', (data: any) => {
-          setWaiting(false)
-          setPlaying(true)
-          setRival(data.username)
-        })
-        setBinded(true)
-      }
-      
-      if (creator) {
-        channel.trigger('client-joined', {
-          username: Ucontext.displayName
-        });
+  const checkWinner = () => {
+    const winningCombos = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    for (let i = 0; i < winningCombos.length; i++) {
+      const [a, b, c] = winningCombos[i];
+      if (turns[a] === turns[b] && turns[b] === turns[c] && a in turns && b in turns && c in turns) {
+        //Winner is determined
+        setResult(playerTurn ? 'Congratulations Player 1!' : 'Nice going Player 2!');
+        finishGame();
       }
     }
-    
-  }, [creator])
 
-  const onPressCreateRoom = () => {
-
-    let room_id = shortid.generate(); // generate a unique ID for the room
-    let channel = pusher.subscribe('private-' + room_id)
-    setChannel(channel); // subscribe to a channel
-
-    // alert the user of the ID that the friend needs to enter 
-    Alert.alert(
-      'Share this room ID to your friend',
-      room_id,
-      [
-        { text: 'Done' },
-      ],
-      { cancelable: false }
-    );
-
-    // show loading state while waiting for someone to join the room
-   
-      setPiece(1) // room creator is always X
-      setWaiting(true)
-      setCreator(true)   
-
+    //when the board is full with no winner, it results in a tie
+    if (Object.keys(turns).length === 9) {
+      setResult('Tie Game!');
+      finishGame();
+    }
   }
 
-  const onPressJoinRoom = () => {
-    setPrompt(true)
-  }
+  const checkTurn = (value: number) => {
+    const tempTurns = turns;
+    tempTurns[value] = playerTurn ? 'X' : 'O';
 
- 
+    //Sets the turn state with the new value added
+    setTurns(tempTurns);
 
-  const joinRoom = (room_id : string) => {
-    let channel = pusher.subscribe('private-' + room_id)
-    setChannel(channel); // subscribe to a channel
-    // inform the room creator that a rival has joined
-    channel.trigger('client-joined', {
-      username: username
-    });
-    
-    setPiece(0)
-    setPrompt(false)
-    setWaiting(true) // wait for the room creator to confirm   
-  }
-
-  const endGame = () => {
-    // reset to the default state
-    
-      setUsername('')
-      setPiece(99)
-      setRival('')
-      setPlaying(false)
-      setPrompt(false)
-      setWaiting(false)
-      setCreator(false)
-    
-    // reset the game channel
-    setChannel(undefined);
-    setBinded(false);
+    //Here we call a function to check if the game is won abd change players
+    checkWinner();
+    togglePlayer();
   }
 
   return (
-    <View style={styles.container}>      
-      {!waiting && !playing &&
-        <View style={styles.button_container}>
-          <Button
-            onPress={() => onPressCreateRoom()}
-            title="Create Room"
-            color="#4c87ea"
-          />
-          <Button
-            onPress={() => onPressJoinRoom()}
-            title="Join Room"
-            color="#1C1C1C"
-          />
-        </View>}
-      
-      {prompt && <ConfirmDialog
-        title="Enter The room Name."
-        visible={prompt}
-        onTouchOutside={() => setPrompt(false)}
-        positiveButton={{
-          title: "Join",
-          onPress: () => {
-            joinRoom(id)            
-          }
-        }} >
-        <View style={styles.Dcontainer}>
-          <TextInput defaultValue={id} onChangeText={(id: string) => setId(id)} style={styles.input} />
-        </View>
-      </ConfirmDialog>}
-
-      {waiting &&
-        <View>
-        <Bounce
-          style={styles.spinner}          
-          size={75}          
-          color={"#549eff"}        
-        />
-        <Button
-          onPress={() => { setWaiting(false) }}
-            title="Cancel"
-            color="#4c87ea"
-        />
-        </View>
-      }
-
-      {playing &&
+    <View style={mainApp.container}>
+      <Text style={mainApp.paragraph}>Let's play Tic-Tac-Toe!</Text>
+      {!end && (
         <Board
-          channel={channel}
-          username={username}
-          piece={piece}
-          rival_username={rival}
-          is_room_creator={creator}
-          endGame={endGame}
+          turns={turns}
+          checkTurn={checkTurn}
         />
-      }
+      )}
+      <Modal animationType={'slide'} visible={modal}>
+        <View style={mainApp.centeredView}>
+          <View style={mainApp.modalView}>
+            <Text style={mainApp.h2}>{result}</Text>
+            <TouchableOpacity style={mainApp.purpleButton} onPress={newGame}>
+              <Text style={mainApp.whiteButtonText}>Start a new game</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <View style={mainApp.legend}>
+        <Text style={mainApp.subheader}>X - Player 1</Text>
+        <Text style={mainApp.subheader}>O - Player 2</Text>
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const mainApp = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-   
+    backgroundColor: '#241239',
+    padding: 8,
   },
-  Dcontainer: {
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
+  paragraph: {
+    margin: 10,
+    fontSize: 18,
     fontWeight: 'bold',
-
-  }, 
-  button_container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  input: {
-    width: '60%',
-    color: 'black',
-    borderColor: 'black',
-    borderStyle: 'solid',
-    borderWidth: 3,
-    height: 45,
-    padding: 13,
     textAlign: 'center',
+    color: 'white',
   },
-  spinner: {
+  subheader: {
+    margin: 10,
+    fontSize: 14,
+    padding: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#25cc6a',
+  },
+  legend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  centeredView: {
     flex: 1,
-    alignSelf: 'center',
-    marginTop: 20,
-    marginBottom: 50
-  }
-
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#241239',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  h2: {
+    margin: 10,
+    fontSize: 16,
+    padding: 5,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#25cc6a',
+  },
+  purpleButton: {
+    backgroundColor: '#241239',
+    padding: 5,
+    borderRadius: 5,
+  },
+  whiteButtonText: {
+    margin: 10,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'white',
+  },
 });
