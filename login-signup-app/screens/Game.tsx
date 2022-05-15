@@ -1,23 +1,54 @@
-import React, { useRef, useState } from 'react'
-import { Component, useEffect } from 'react';
-import { StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Modal, TouchableOpacity, Button, Alert, TextInput } from 'react-native';
 import { Auth, User } from 'firebase/auth';
 import { Text, View } from '../components/Themed';
-import { AuthContext, UserContext } from '../navigation';
+import { AuthContext, DBContext, UserContext } from '../navigation';
+import { nanoid } from 'nanoid/non-secure'
+import { Bounce } from 'react-native-animated-spinkit';
 import Board  from '../components/Board';
+import { ref, set, Database } from 'firebase/database';
+import { ConfirmDialog } from 'react-native-simple-dialogs';
 
 
 
 export default function Game() {
+  const Ucontext: User = React.useContext(UserContext);
+  const DatabaseContext: Database = React.useContext(DBContext);
+
   const [playerTurn, changeTurn] = useState(true);
   const [end, endGame] = useState(true);
   const [modal, toggleModal] = useState(true);
-
-  //Result message for winner and tie games
   const [result, setResult] = useState('');
-
-  //Turns dictionary to store turns taken
+  const [waiting, setWaiting] = React.useState(false);
+  const [ID, setID] = useState(nanoid());
   const [turns, setTurns] = useState<Array<String>>(['']);
+  const [prompt, setPrompt] = React.useState(false);
+
+  const createRoom = () => {
+    setID(nanoid())
+    const reference = ref(DatabaseContext, 'Game/' + ID);
+    
+    set(reference, {
+      name: Ucontext.displayName,
+      creator: true
+    });
+
+    Alert.alert(
+      'Share this room ID to your friend',
+      ID,
+      [
+        { text: 'Done' },
+      ],
+      { cancelable: false }
+    );
+
+    setWaiting(true)
+    toggleModal(false)
+  }
+
+  const joinRoom = (id : string) => {
+    console.log(id)
+  }  
 
   //Hook toggles for components to render and switch players
   const togglePlayer = () => changeTurn(!playerTurn);
@@ -81,29 +112,60 @@ export default function Game() {
   return (
     <View style={mainApp.container}>
       <Text style={mainApp.paragraph}>Let's play Tic-Tac-Toe!</Text>
-      {!end && (
+      {!end &&
         <Board
           checkTurn={checkTurn}
-          turns={turns}          
+          turns={turns}
         />
-      )}
-      <Modal animationType={'slide'} visible={modal}>
-        <View style={mainApp.centeredView}>
-          <View style={mainApp.modalView}>
-            <Text style={mainApp.h2}>{result}</Text>
-            <TouchableOpacity style={mainApp.purpleButton} onPress={newGame}>
-              <Text style={mainApp.whiteButtonText}>Start a new game</Text>
-            </TouchableOpacity>
-          </View>
+      }
+
+      {waiting &&
+        <View>
+          <Bounce
+          style={mainApp.spinner}
+            size={75}
+            color={"#549eff"}
+          />
+          <Button
+            onPress={() => { setWaiting(false), toggleModal(true) }}
+            title="Cancel"
+            color="#4c87ea"
+          />
         </View>
-      </Modal>
-      <View style={mainApp.legend}>
-        <Text style={mainApp.subheader}>X - Player 1</Text>
-        <Text style={mainApp.subheader}>O - Player 2</Text>
-      </View>
+      }
+
+      {prompt && <ConfirmDialog
+        visible={prompt}
+        title="Enter The room Name."       
+        onTouchOutside={() => setPrompt(false)}
+        positiveButton={{
+          title: "Join",
+          onPress: () => {
+            joinRoom(ID)
+          }
+        }} >
+        <View style={mainApp.Dcontainer}>
+          <TextInput defaultValue={''} onChangeText={(id: string) => setID(id)} style={mainApp.input} />
+        </View>
+      </ConfirmDialog>}
+
+      {modal && <View style={mainApp.centeredView}>
+        <View style={mainApp.modalView}>          
+          <TouchableOpacity style={mainApp.purpleButton} onPress={createRoom} >
+            <Text style={mainApp.whiteButtonText}>Create a Room</Text>
+          </TouchableOpacity>
+          <View style={mainApp.split}/>
+          <TouchableOpacity style={mainApp.purpleButton} onPress={() => { setPrompt(true) }}>
+            <Text style={mainApp.whiteButtonText}>Join a Room</Text>
+          </TouchableOpacity>
+        </View>
+      </View> ||
+        <View style={mainApp.legend}>
+          <Text style={mainApp.subheader}>X - Player 1</Text>
+          <Text style={mainApp.subheader}>O - Player 2</Text>
+        </View>}
     </View>
-  );
-}
+  );}
 
 const mainApp = StyleSheet.create({
   container: {
@@ -137,22 +199,14 @@ const mainApp = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#241239',
   },
-  modalView: {
-    margin: 20,
+  modalView: {    
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    padding: 35,        
   },
   h2: {
+    justifyContent: 'space-between',
+
     margin: 10,
     fontSize: 16,
     padding: 5,
@@ -162,14 +216,38 @@ const mainApp = StyleSheet.create({
   },
   purpleButton: {
     backgroundColor: '#241239',
-    padding: 5,
+    padding: 2,
     borderRadius: 5,
+    textAlign:'center'
   },
   whiteButtonText: {
     margin: 10,
     fontSize: 12,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: 'bold',   
     color: 'white',
+  },
+  split: {
+    height: 40,
+    backgroundColor:'white'
+  },
+  spinner: {
+    flex: 1,   
+    alignSelf: 'center',
+    marginTop: 20,
+    marginBottom: 100
+  },
+  Dcontainer: {
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+  input: {
+    width: '60%',
+    color: 'black',
+    borderColor: 'black',
+    borderStyle: 'solid',
+    borderWidth: 3,
+    height: 45,
+    padding: 13,
+    textAlign: 'center',
   },
 });

@@ -25,15 +25,17 @@ import Register from '../screens/Register';
 import Chat from '../screens/Chat';
 import Home from '../screens/Home';
 import { Firestore } from 'firebase/firestore';
+import { Database } from 'firebase/database';
 
 
 
 export const AuthContext = React.createContext<Auth | undefined>(undefined);
 export const UserContext = React.createContext<User | undefined>(undefined);
 export const DataContext = React.createContext<Firestore | undefined>(undefined);
+export const DBContext = React.createContext<Database | undefined>(undefined);
 
 
-export default function Navigation({ colorScheme, auth, user, data }: { colorScheme: ColorSchemeName, auth: Auth, user: User, data: Firestore }) {
+export default function Navigation({ colorScheme, auth, user, data, database }: { colorScheme: ColorSchemeName, auth: Auth, user: User, data: Firestore, database : Database }) {
    
   return (
     <NavigationContainer
@@ -42,7 +44,9 @@ export default function Navigation({ colorScheme, auth, user, data }: { colorSch
       <AuthContext.Provider value={auth}>
         <UserContext.Provider value={user}>
           <DataContext.Provider value={data}>
-            <RootNavigator />
+            <DBContext.Provider value={database}>
+              <RootNavigator />
+            </DBContext.Provider>
           </DataContext.Provider>
         </UserContext.Provider>
       </AuthContext.Provider>
