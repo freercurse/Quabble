@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
-interface Props {
-  spaceID: number
-  spaceValue: String
-  setTurn: Function
-}
+export default function Space({ spaceID, spaceValue, setTurn }: { spaceID: Number, spaceValue: String, setTurn: any }) {
 
-
-export const Space = ({ spaceID, spaceValue, setTurn } : Props) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.space} onPress={() => { setTurn(spaceID) }} disabled={spaceValue ? true : false}>

@@ -4,7 +4,7 @@ import { StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Auth, User } from 'firebase/auth';
 import { Text, View } from '../components/Themed';
 import { AuthContext, UserContext } from '../navigation';
-import { Board } from '../components/Board';
+import Board  from '../components/Board';
 
 
 
@@ -17,7 +17,7 @@ export default function Game() {
   const [result, setResult] = useState('');
 
   //Turns dictionary to store turns taken
-  const [turns, setTurns] = useState<Array<String>>([]);
+  const [turns, setTurns] = useState<Array<String>>(['']);
 
   //Hook toggles for components to render and switch players
   const togglePlayer = () => changeTurn(!playerTurn);
@@ -69,7 +69,7 @@ export default function Game() {
   const checkTurn = (value: number) => {
     const tempTurns = turns;
     tempTurns[value] = playerTurn ? 'X' : 'O';
-
+    console.log(turns)
     //Sets the turn state with the new value added
     setTurns(tempTurns);
 
@@ -83,8 +83,8 @@ export default function Game() {
       <Text style={mainApp.paragraph}>Let's play Tic-Tac-Toe!</Text>
       {!end && (
         <Board
-          turns={turns}
           checkTurn={checkTurn}
+          turns={turns}          
         />
       )}
       <Modal animationType={'slide'} visible={modal}>
