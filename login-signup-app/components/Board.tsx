@@ -4,7 +4,7 @@ import Space from './Space';
 
 
 export default function Board(checkTurn: any) {
-  console.log(checkTurn.turns)
+  console.log(checkTurn)
   return (
     <View style={boardStyle.container}>
       <View style={boardStyle.board}>
