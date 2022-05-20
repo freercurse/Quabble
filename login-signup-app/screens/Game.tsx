@@ -6,7 +6,7 @@ import { AuthContext, DBContext, UserContext } from '../navigation';
 import { nanoid } from 'nanoid/non-secure'
 import { Bounce } from 'react-native-animated-spinkit';
 import Board  from '../components/Board';
-import { ref, set, Database } from 'firebase/database';
+import { ref, set, Database, onValue } from 'firebase/database';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
 
 
@@ -23,6 +23,17 @@ export default function Game() {
   const [ID, setID] = useState(nanoid());
   const [turns, setTurns] = useState<Array<String>>(['']);
   const [prompt, setPrompt] = React.useState(false);
+  const [Gamestate, setGameState] = React.useState<any>();
+
+  useEffect(() => {
+    if (Gamestate?.Ready == true && waiting == true) {
+      newGame()
+      setWaiting(false)
+    }
+
+
+
+  },[Gamestate])
 
   const createRoom = () => {
     setID(nanoid())
@@ -30,7 +41,9 @@ export default function Game() {
     
     set(reference, {
       name: Ucontext.displayName,
-      creator: true
+      creator: true,
+      Ready: waiting,
+      moves: turns,
     });
 
     Alert.alert(
@@ -44,11 +57,30 @@ export default function Game() {
 
     setWaiting(true)
     toggleModal(false)
+    setGame(ID)
   }
 
-  const joinRoom = (id : string) => {
-    console.log(id)
-  }  
+  const setGame = (id: string) => {
+
+    const reference = ref(DatabaseContext, 'Game/' + ID);
+    onValue(reference, (snapshot) => {
+      const Game = snapshot.val();      
+      setGameState(Game)
+    })  
+  }
+
+  const joinRoom = () => {
+    setGame(ID)
+
+    if (Gamestate == null) {
+      alert("Game does not exist! \nTry Again.")         
+    } else {
+      setPrompt(false)
+      setWaiting(true)
+      toggleModal(false)
+    }      
+      
+  }    
 
   //Hook toggles for components to render and switch players
   const togglePlayer = () => changeTurn(!playerTurn);
@@ -99,8 +131,7 @@ export default function Game() {
 
   const checkTurn = (value: number) => {
     const tempTurns = turns;
-    tempTurns[value] = playerTurn ? 'X' : 'O';
-    console.log(turns)
+    tempTurns[value] = playerTurn ? 'X' : 'O';   
     //Sets the turn state with the new value added
     setTurns(tempTurns);
 
@@ -141,7 +172,8 @@ export default function Game() {
         positiveButton={{
           title: "Join",
           onPress: () => {
-            joinRoom(ID)
+            joinRoom()
+            
           }
         }} >
         <View style={mainApp.Dcontainer}>
