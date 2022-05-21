@@ -6,7 +6,7 @@ import { AuthContext, DBContext, UserContext } from '../navigation';
 import { nanoid } from 'nanoid/non-secure'
 import { Bounce } from 'react-native-animated-spinkit';
 import Board  from '../components/Board';
-import { ref, set, Database, onValue } from 'firebase/database';
+import { ref, set, Database, onValue, update, remove } from 'firebase/database';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
 
 
@@ -15,7 +15,8 @@ export default function Game() {
   const Ucontext: User = React.useContext(UserContext);
   const DatabaseContext: Database = React.useContext(DBContext);
 
-  const [playerTurn, changeTurn] = useState(true);
+  const [playerTurn, changeTurn] = useState(false);
+  const [quitter, setQuitter] = useState(false);
   const [end, endGame] = useState(true);
   const [modal, toggleModal] = useState(true);
   const [result, setResult] = useState('');
@@ -24,14 +25,26 @@ export default function Game() {
   const [turns, setTurns] = useState<Array<String>>(['']);
   const [prompt, setPrompt] = React.useState(false);
   const [Gamestate, setGameState] = React.useState<any>();
+  const [DBRef, setDBRef] = React.useState<any>();
 
   useEffect(() => {
     if (Gamestate?.Ready == true && waiting == true) {
       newGame()
       setWaiting(false)
+    } 
+
+    if (Gamestate?.Quit) {
+      if (quitter) {
+        alert("Your have quit the game")
+      } else {
+        alert("Your Oponent has ended the game")
+        remove(DBRef)
+      }
+      
+      finishGame()
     }
-
-
+    
+    setTurns(Gamestate?.BoardState)    
 
   },[Gamestate])
 
@@ -40,10 +53,11 @@ export default function Game() {
     const reference = ref(DatabaseContext, 'Game/' + ID);
     
     set(reference, {
-      name: Ucontext.displayName,
+      CREName: Ucontext.displayName,
       creator: true,
-      Ready: waiting,
-      moves: turns,
+      Ready: false,      
+      Mover: true,
+      BoardState: [''],
     });
 
     Alert.alert(
@@ -55,6 +69,7 @@ export default function Game() {
       { cancelable: false }
     );
 
+    togglePlayer()
     setWaiting(true)
     toggleModal(false)
     setGame(ID)
@@ -63,6 +78,7 @@ export default function Game() {
   const setGame = (id: string) => {
 
     const reference = ref(DatabaseContext, 'Game/' + ID);
+    setDBRef(reference)
     onValue(reference, (snapshot) => {
       const Game = snapshot.val();      
       setGameState(Game)
@@ -74,18 +90,28 @@ export default function Game() {
 
     if (Gamestate == null) {
       alert("Game does not exist! \nTry Again.")         
-    } else {
+    } else {      
       setPrompt(false)
       setWaiting(true)
       toggleModal(false)
-    }      
+
+      update(DBRef, {
+        OPName: Ucontext.displayName,        
+        Ready: true,        
+      });
+    }            
+  }
+
+  const quitGame = () => {
+    setQuitter(true)
+    set(DBRef, {      
+      Quit: true,
       
-  }    
+    });
+  }
 
   //Hook toggles for components to render and switch players
   const togglePlayer = () => changeTurn(!playerTurn);
-  const toggleGame = () => endGame(!end);
-  const triggerModal = () => toggleModal(!modal)
 
   //Hook to set a new game
   const newGame = () => {
@@ -97,8 +123,10 @@ export default function Game() {
 
   //Hook to end the game and render components needed
   const finishGame = () => {
+    setPrompt(false)
+    toggleModal(true)
     endGame(true);
-    triggerModal();
+    setWaiting(false)
   };
 
   const checkWinner = () => {
@@ -130,14 +158,20 @@ export default function Game() {
   }
 
   const checkTurn = (value: number) => {
-    const tempTurns = turns;
-    tempTurns[value] = playerTurn ? 'X' : 'O';   
-    //Sets the turn state with the new value added
-    setTurns(tempTurns);
+    if (playerTurn ==  Gamestate?.Mover) {
+      const tempTurns = turns;
+      tempTurns[value] = playerTurn ? 'X' : 'O';
+       
 
-    //Here we call a function to check if the game is won abd change players
-    checkWinner();
-    togglePlayer();
+      //Here we call a function to check if the game is won abd change players
+      checkWinner();
+
+      update(DBRef, {
+        BoardState: tempTurns,
+        Mover: !playerTurn,
+      });
+    }
+    
   }
 
   return (
@@ -145,8 +179,9 @@ export default function Game() {
       <Text style={mainApp.paragraph}>Let's play Tic-Tac-Toe!</Text>
       {!end &&
         <Board
-          checkTurn={checkTurn}
-          turns={turns}
+        checkTurn={checkTurn}
+        turns={turns}
+        Quit={quitGame}
         />
       }
 
@@ -158,7 +193,7 @@ export default function Game() {
             color={"#549eff"}
           />
           <Button
-            onPress={() => { setWaiting(false), toggleModal(true) }}
+            onPress={() => { setWaiting(false), toggleModal(true), remove(DBRef) }}
             title="Cancel"
             color="#4c87ea"
           />
@@ -177,7 +212,7 @@ export default function Game() {
           }
         }} >
         <View style={mainApp.Dcontainer}>
-          <TextInput defaultValue={''} onChangeText={(id: string) => setID(id)} style={mainApp.input} />
+          <TextInput defaultValue={''} onChangeText={(id: string) => setID(id.trim())} style={mainApp.input} />
         </View>
       </ConfirmDialog>}
 
