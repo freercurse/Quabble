@@ -29,12 +29,13 @@ export default function Game() {
   const [DBRef, setDBRef] = React.useState<any>();
 
   useEffect(() => {
+    //both players have joined and are ready
     if (Gamestate?.Ready == true && waiting == true) {
       newGame()
       setWaiting(false)
       playerTurn ? setOpName(Gamestate?.OPName) : setCreName(Gamestate?.CREName)
     } 
-
+    //one person has quite so end the game
     if (Gamestate?.Quit) {
       if (quitter) {
         alert("Your have quit the game")
@@ -45,7 +46,7 @@ export default function Game() {
       
       finishGame()
     }
-
+    //a winner has been declared by someone, determine if draw and display screen
     if (Gamestate?.Winner == true) {
       Alert.alert(
         Gamestate.Mover != playerTurn ? 'Congratulations' : 'Game Over',
@@ -73,11 +74,12 @@ export default function Game() {
 
       
     }
-    
+    //Auto update the board state when a turn is declared
     setTurns(Gamestate?.BoardState)    
 
   },[Gamestate])
 
+  //set DB reference for the room and display the id to the user
   const createRoom = () => {
     setID(nanoid())
     const reference = ref(DatabaseContext, 'Game/' + ID);
@@ -103,7 +105,7 @@ export default function Game() {
     toggleModal(false)
     setGame(ID)
   }
-
+  //declare reference and stor in state, initialising listener to update state
   const setGame = (id: string) => {
 
     const reference = ref(DatabaseContext, 'Game/' + ID);
@@ -114,8 +116,9 @@ export default function Game() {
     })  
   }
 
-  const joinRoom = () => {
-    setGame(ID)
+  //try to create a reference to the given ID fail if reference not found
+  const joinRoom = async () => {
+    await setGame(ID)
 
     if (Gamestate == null) {
       alert("Game does not exist! \nTry Again.")         
@@ -131,7 +134,7 @@ export default function Game() {
       });
     }            
   }
-
+  //set the Quit game state
   const quitGame = () => {
     setQuitter(true)
     set(DBRef, {      
