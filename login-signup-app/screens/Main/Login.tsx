@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useLayoutEffect } from 'react';
 import { Button, LogBox, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import {signInWithEmailAndPassword,Auth, UserCredential, User } from 'firebase/auth';
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
-import { AuthContext, UserContext } from '../navigation';
+import { Text, View } from '../../components/Themed';
+import { RootTabScreenProps } from '../../types';
+import { AuthContext, UserContext } from '../../navigation';
 import * as SecureStore from 'expo-secure-store';
 
 import Register from './Register';

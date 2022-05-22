@@ -1,10 +1,10 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {Button,Platform, Pressable, StyleSheet, TextInput, Image, LogBox } from 'react-native';
-import { AuthContext, DataContext, UserContext } from '../navigation/index';
+import { AuthContext, DataContext, UserContext } from '../../navigation/index';
 
-import { Text, View } from '../components/Themed';
-import { RootTabScreenProps } from '../types';
+import { Text, View } from '../../components/Themed';
+import { RootTabScreenProps } from '../../types';
 import { Auth, updateProfile, User } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 

@@ -5,8 +5,8 @@ import { GiftedChat, IMessage, Message } from 'react-native-gifted-chat';
 import {collection, addDoc, orderBy, query, onSnapshot, Firestore, DocumentData} from 'firebase/firestore';
 
 import { Auth, User } from 'firebase/auth';
-import { RootTabScreenProps } from '../types';
-import { AuthContext, DataContext, UserContext } from '../navigation';
+import { RootTabScreenProps } from '../../types';
+import { AuthContext, DataContext, UserContext } from '../../navigation';
 
 
 export default function Chat({ navigation, }: RootTabScreenProps<'Chat'>) {

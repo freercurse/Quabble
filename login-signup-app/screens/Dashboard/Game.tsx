@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Modal, TouchableOpacity, Button, Alert, TextInput, Clipboard } from 'react-native';
 import { Auth, User } from 'firebase/auth';
-import { Text, View } from '../components/Themed';
-import { AuthContext, DBContext, UserContext } from '../navigation';
+import { Text, View } from '../../components/Themed';
+import { AuthContext, DBContext, UserContext } from '../../navigation';
 import { nanoid } from 'nanoid/non-secure'
 import { Bounce } from 'react-native-animated-spinkit';
-import Board  from '../components/Board';
+import Board  from '../../components/Tic-Tac-Toe/Board';
 import { ref, set, Database, onValue, update, remove } from 'firebase/database';
 import { ConfirmDialog } from 'react-native-simple-dialogs';
 

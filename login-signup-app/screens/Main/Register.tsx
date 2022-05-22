@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { Button, StyleSheet, TextInput } from 'react-native';
 import { createUserWithEmailAndPassword, Auth, UserCredential, sendEmailVerification, g } from 'firebase/auth';
-import { AuthContext } from '../navigation/index';
-import EditScreenInfo from '../components/EditScreenInfo';
-import { Text, View } from '../components/Themed';
+import { AuthContext } from '../../navigation/index';
+import EditScreenInfo from '../../components/EditScreenInfo';
+import { Text, View } from '../../components/Themed';
 
 export default function Register() {
   const [username, setUsername] = React.useState('');

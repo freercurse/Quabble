@@ -17,13 +17,13 @@ import { Auth, User } from 'firebase/auth';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
-import Game from '../screens/Game';
-import FAQ from '../screens/FAQ';
+import Game from '../screens/Dashboard/Game';
+import FAQ from '../screens/Main/FAQ';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import Login from '../screens/Login';
-import Register from '../screens/Register';
-import Chat from '../screens/Chat';
-import Home from '../screens/Home';
+import Login from '../screens/Main/Login';
+import Register from '../screens/Main/Register';
+import Chat from '../screens/Dashboard/Chat';
+import Home from '../screens/Dashboard/Home';
 import { Firestore } from 'firebase/firestore';
 import { Database } from 'firebase/database';
 

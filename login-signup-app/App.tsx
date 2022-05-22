@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import 'dotenv/config'
+import { API, AUTH, PROJECT, STORAGE, MESSAGE, APP, MEASUREMENT, DATABASE} from '@env'
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
@@ -8,20 +8,20 @@ import { getDatabase } from "firebase/database";
 import { initializeApp } from 'firebase/app';
 import { Bytes, getFirestore } from "firebase/firestore";
 import { LogBox, StyleSheet } from 'react-native';
-require('dotenv').config()
+
 
 import { useState } from 'react';
 
 
 const firebaseConfig = {
-  apiKey: process.env.API,
-  authDomain: process.env.AUTH,
-  projectId: process.env.PROJECT,
-  storageBucket: process.env.STORAGE,
-  messagingSenderId: process.env.MESSAGE,
-  appId: process.env.APP,
-  measurementId: process.env.MESUREMENT,
-  databaseURL: process.env.DATABASE
+  apiKey: API,
+  authDomain: AUTH,
+  projectId: PROJECT,
+  storageBucket: STORAGE,
+  messagingSenderId: MESSAGE,
+  appId: APP,
+  measurementId: MEASUREMENT,
+  databaseURL: DATABASE
 };
 
 const app = initializeApp(firebaseConfig);
