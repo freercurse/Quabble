@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Modal, TouchableOpacity, Button, Alert, TextInput } from 'react-native';
+import { StyleSheet, Modal, TouchableOpacity, Button, Alert, TextInput, Clipboard } from 'react-native';
 import { Auth, User } from 'firebase/auth';
 import { Text, View } from '../components/Themed';
 import { AuthContext, DBContext, UserContext } from '../navigation';
@@ -18,8 +18,9 @@ export default function Game() {
   const [playerTurn, changeTurn] = useState(false);
   const [quitter, setQuitter] = useState(false);
   const [end, endGame] = useState(true);
-  const [modal, toggleModal] = useState(true);
-  const [result, setResult] = useState('');
+  const [opName, setOpName] = useState('')
+  const [creName, setCreName] = useState('')
+  const [modal, toggleModal] = useState(true);  
   const [waiting, setWaiting] = React.useState(false);
   const [ID, setID] = useState(nanoid());
   const [turns, setTurns] = useState<Array<String>>(['']);
@@ -31,6 +32,7 @@ export default function Game() {
     if (Gamestate?.Ready == true && waiting == true) {
       newGame()
       setWaiting(false)
+      playerTurn ? setOpName(Gamestate?.OPName) : setCreName(Gamestate?.CREName)
     } 
 
     if (Gamestate?.Quit) {
@@ -43,6 +45,34 @@ export default function Game() {
       
       finishGame()
     }
+
+    if (Gamestate?.Winner == true) {
+      Alert.alert(
+        Gamestate.Mover != playerTurn ? 'Congratulations' : 'Game Over',
+        "Do you want to play again?",
+        [
+          {
+            text: "Yes",
+            onPress: () => update(DBRef, { BoardState: [''], Mover: Gamestate?.Mover, Winner: null})
+          },
+          { text: "No", onPress: () => setTimeout(() => { quitGame() }, 500) }
+        ]
+      );
+    } else if (Gamestate?.Winner == false && Gamestate?.BoardState.length > 1 ){
+      Alert.alert(
+        "Draw",
+        "Do you want to play again?",
+        [
+          {
+            text: "Yes",
+            onPress: () => update(DBRef, { BoardState: [''], Mover: Gamestate?.Mover, Winner: null })
+          },
+          { text: "No", onPress: () => setTimeout(() => { quitGame() }, 500) }
+        ]
+      );
+
+      
+    }
     
     setTurns(Gamestate?.BoardState)    
 
@@ -53,8 +83,7 @@ export default function Game() {
     const reference = ref(DatabaseContext, 'Game/' + ID);
     
     set(reference, {
-      CREName: Ucontext.displayName,
-      creator: true,
+      CREName: Ucontext.displayName,     
       Ready: false,      
       Mover: true,
       BoardState: [''],
@@ -64,12 +93,12 @@ export default function Game() {
       'Share this room ID to your friend',
       ID,
       [
+        { text: 'Copy', onPress: () => { Clipboard.setString(ID)} },
         { text: 'Done' },
-      ],
-      { cancelable: false }
+      ]
     );
 
-    togglePlayer()
+    changeTurn(true)
     setWaiting(true)
     toggleModal(false)
     setGame(ID)
@@ -94,6 +123,7 @@ export default function Game() {
       setPrompt(false)
       setWaiting(true)
       toggleModal(false)
+      changeTurn(false)
 
       update(DBRef, {
         OPName: Ucontext.displayName,        
@@ -110,15 +140,11 @@ export default function Game() {
     });
   }
 
-  //Hook toggles for components to render and switch players
-  const togglePlayer = () => changeTurn(!playerTurn);
-
   //Hook to set a new game
   const newGame = () => {
     setTurns([]);
     endGame(false);
-    toggleModal(false);
-    changeTurn(true);
+    toggleModal(false);    
   };
 
   //Hook to end the game and render components needed
@@ -145,20 +171,23 @@ export default function Game() {
       const [a, b, c] = winningCombos[i];
       if (turns[a] === turns[b] && turns[b] === turns[c] && a in turns && b in turns && c in turns) {
         //Winner is determined
-        setResult(playerTurn ? 'Congratulations Player 1!' : 'Nice going Player 2!');
-        finishGame();
+        update(DBRef, {
+          Winner: true
+        });        
       }
     }
 
     //when the board is full with no winner, it results in a tie
-    if (Object.keys(turns).length === 9) {
-      setResult('Tie Game!');
-      finishGame();
+    if (Object.keys(turns).length === 9) {      
+      update(DBRef, {
+        Winner: false
+      });
     }
   }
 
-  const checkTurn = (value: number) => {
-    if (playerTurn ==  Gamestate?.Mover) {
+  const checkTurn = (value: number) => {    
+    if (playerTurn == Gamestate?.Mover) {
+      
       const tempTurns = turns;
       tempTurns[value] = playerTurn ? 'X' : 'O';
        
@@ -177,6 +206,8 @@ export default function Game() {
   return (
     <View style={mainApp.container}>
       <Text style={mainApp.paragraph}>Let's play Tic-Tac-Toe!</Text>
+      { playerTurn == Gamestate?.Mover &&<Text style={mainApp.paragraph}>Your Turn</Text>}
+
       {!end &&
         <Board
         checkTurn={checkTurn}
@@ -228,8 +259,8 @@ export default function Game() {
         </View>
       </View> ||
         <View style={mainApp.legend}>
-          <Text style={mainApp.subheader}>X - Player 1</Text>
-          <Text style={mainApp.subheader}>O - Player 2</Text>
+        <Text style={mainApp.subheader}>X - {creName != '' ? creName : Ucontext.displayName}</Text>
+        <Text style={mainApp.subheader}>O - {opName != '' ? opName : Ucontext.displayName }</Text>
         </View>}
     </View>
   );}
