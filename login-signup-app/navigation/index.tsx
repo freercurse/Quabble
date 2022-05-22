@@ -28,7 +28,6 @@ import { Firestore } from 'firebase/firestore';
 import { Database } from 'firebase/database';
 
 
-
 export const AuthContext = React.createContext<Auth | undefined>(undefined);
 export const UserContext = React.createContext<User | undefined>(undefined);
 export const DataContext = React.createContext<Firestore | undefined>(undefined);
@@ -74,19 +73,30 @@ function RootNavigator() {
       )   
 }
 
+function signInPage(){
+  return(
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      
+    </Stack.Navigator>
+  )
+}
+
+
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
  * https://reactnavigation.org/docs/bottom-tab-navigator
  */
+
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-function BottomTabNavigator() {  
+function BottomTabNavigator() { 
+   
   const colorScheme = useColorScheme();  
   return (
     
     <BottomTab.Navigator
       initialRouteName="Login"
-      screenOptions={{
+      screenOptions={{ 
         tabBarActiveTintColor: Colors[colorScheme].tint,
         
       }}>

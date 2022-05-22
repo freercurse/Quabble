@@ -1,10 +1,14 @@
 import React, { useContext, useEffect, useLayoutEffect } from 'react';
-import { Button, LogBox, StyleSheet, TextInput } from 'react-native';
+import { Button, LogBox, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import {signInWithEmailAndPassword,Auth, UserCredential, User } from 'firebase/auth';
 import { Text, View } from '../components/Themed';
 import { RootTabScreenProps } from '../types';
 import { AuthContext, UserContext } from '../navigation';
 import * as SecureStore from 'expo-secure-store';
+
+import Register from './Register';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
   LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ']);
@@ -20,6 +24,7 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
       navigation.navigate('Dashboard');
     }
   },[Ucontext])
+  
   
   
  
@@ -55,14 +60,30 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
   }
   
   return (
+
     <View style={styles.container}>
       <Text style={styles.title}>Quabble</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Text style={styles.title}>Email Address</Text>
-      <TextInput defaultValue={username} onChangeText={(email) => setUsername(email.trim())} style={styles.input} />
-      <Text style={styles.title}>Password</Text>
-      <TextInput defaultValue={password} onChangeText={(password) => setPassword(password)} secureTextEntry={true} style={styles.input} />
-      <Button onPress={() => handleLogin()}  title="Login" />
+      <TextInput placeholder='Email Address' placeholderTextColor="white" defaultValue={username} onChangeText={(email) => setUsername(email.trim())} style={styles.input} />
+      <TouchableOpacity>
+              <Text style={{marginLeft: 150, fontFamily: 'monospace'}}>Forgot Email?</Text>
+
+      </TouchableOpacity>
+      
+      <TextInput placeholder= "Password" placeholderTextColor="white" defaultValue={password} onChangeText={(password) => setPassword(password)} secureTextEntry={true} style={styles.input} />
+    
+     <TouchableOpacity>
+             <Text style = {styles.textStyle}>Forgot Password?</Text>
+     </TouchableOpacity>
+     
+
+      <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
+        <Text style={{fontFamily: 'monospace'}}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style = {{marginTop: 20, fontFamily: 'monospace'}}> Not registered?</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -74,26 +95,47 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
+    fontFamily: 'monospace',
 
   },
+
+  textStyle: {
+    marginLeft: 150,
+    marginBottom: 20,
+    fontFamily: 'monospace',
+  },
+
   separator: {
     marginVertical: 30,
     height: 1,
     width: '80%',
   },
+
+  button:{
+    backgroundColor: '#CF9FFF',
+    padding: 20,
+    borderRadius: 25,
+  },
+
   input: {
+
+    fontFamily: 'monospace',
     width: '60%',
     color: 'white',
-    borderColor: 'white',
+    borderColor: 'black',
     borderStyle: 'solid',
-    borderWidth: 3,
+    borderWidth: 2,
     height: 45,
     padding: 13,
-    textAlign: 'center',
+    textAlign: 'left',
     marginTop: 20,
     marginBottom: 20,
+    borderRadius: 25,
+    backgroundColor: '#CF9FFF',
   },
+
+  
  
 });
