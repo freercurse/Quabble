@@ -353,3 +353,5 @@ login-signup-app/.expo/
 .idea/
 
 .expo/
+
+login-signup-app/.env
