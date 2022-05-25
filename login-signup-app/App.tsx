@@ -32,7 +32,7 @@ import {getAuth, onAuthStateChanged, User,  } from 'firebase/auth';
 import React from 'react';
 
 export default function App() {
-  LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ', 'Event']);
+  LogBox.ignoreLogs(['Require', 'AsyncStorage ', 'Event', 'View']);
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();  
   

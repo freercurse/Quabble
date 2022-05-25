@@ -32,6 +32,7 @@ const linking: LinkingOptions<RootStackParamList> = {
           Game: 'Game',
           Chat: 'Chat',
           Home: 'Home',
+          List: 'List'
         }
       },
       FAQ: 'FAQ',

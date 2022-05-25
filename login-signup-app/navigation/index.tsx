@@ -26,6 +26,7 @@ import Chat from '../screens/Dashboard/Chat';
 import Home from '../screens/Dashboard/Home';
 import { Firestore } from 'firebase/firestore';
 import { Database } from 'firebase/database';
+import List from '../screens/Dashboard/List';
 
 
 export const AuthContext = React.createContext<Auth | undefined>(undefined);
@@ -161,6 +162,13 @@ function DashboardBottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'Game'>) => ({
           title: 'Tic-Tac-Toe',
           tabBarIcon: ({ color }) => <TabBarIcon name="play" color={color} />,          
+        })} />
+      <BottomTab.Screen
+        name="List"
+        component={List}
+        options={({ navigation }: RootTabScreenProps<'List'>) => ({
+          title: 'ToDo List',
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,          
         })} />
             
       
