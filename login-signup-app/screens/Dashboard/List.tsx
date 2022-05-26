@@ -21,16 +21,16 @@ export default function List() {
       if (querySnapshot.empty) {
         initalSetup()
       }
-     
+
       setRecords(querySnapshot.docs)
-      
-    }, (error) => {console.log(error)});
-    
+
+    }, (error) => { console.log(error) });
+
 
     return () => unsubscribe();
   }, [])
 
-  const initalSetup = () => {    
+  const initalSetup = () => {
     setDoc(doc(Dcontext, 'Lists/Users/' + Ucontext.uid + '/Records/Private/' + nanoid()), {
       Title: "Welcome",
       Message: "Hello and Welcome to your private Lists, create and share to your hearts content!",
@@ -48,7 +48,7 @@ export default function List() {
           {item.data.Title}
         </Text>
       </View>
-      )
+    )
   }
 
   const getTitles = (section: any) => {
@@ -59,7 +59,7 @@ export default function List() {
           {section.title}
         </Text>
       </View>
-      )
+    )
   }
 
   return (
@@ -70,10 +70,10 @@ export default function List() {
           { title: 'Shared', data: records.filter((x: { shared: boolean; }) => x.shared == true) }
         ]}
         renderItem={({ item }) => getItems(item)}
-        renderSectionHeader={({ section }) => getTitles(section)}       
+        renderSectionHeader={({ section }) => getTitles(section)}
       />
     </View>
-    )
+  )
 }
 
 
@@ -86,11 +86,11 @@ const styles = StyleSheet.create({
   },
   item: {
     paddingHorizontal: 80,
-    paddingVertical:20,
-    borderWidth:1,
+    paddingVertical: 20,
+    borderWidth: 1,
     borderStyle: "solid",
     borderColor: 'black',
-    borderRadius: 20    
+    borderRadius: 20
   },
   header: {
     borderWidth: 1,
@@ -100,6 +100,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     borderStyle: "solid",
     borderColor: 'black',
-    borderRadius: 20    
+    borderRadius: 20
   },
 })

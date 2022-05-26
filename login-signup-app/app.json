@@ -7,7 +7,7 @@
       },
       "package": "host.quabble.client",
       "permissions": [],
-      "versionCode": 9  
+      "versionCode": 9
     },
     "plugins": [
       [
@@ -15,7 +15,7 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends as your avatar."
         }
-      ]      
+      ]
     ],
     "assetBundlePatterns": [
       "**/*"
@@ -26,7 +26,7 @@
     },
     "name": "Quabble",
     "orientation": "portrait",
-    
+
     "scheme": "quabble",
     "slug": "Quabble",
     "splash": {

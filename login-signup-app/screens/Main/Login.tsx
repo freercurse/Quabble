@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useLayoutEffect } from 'react';
 import { Button, LogBox, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import {signInWithEmailAndPassword,Auth, UserCredential, User } from 'firebase/auth';
+import { signInWithEmailAndPassword, Auth, UserCredential, User } from 'firebase/auth';
 import { Text, View } from '../../components/Themed';
 import { RootTabScreenProps } from '../../types';
 import { AuthContext, UserContext } from '../../navigation';
@@ -12,26 +12,26 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
   LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ']);
-  
+
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
-  
+
   const Ucontext: User = React.useContext(UserContext);
   const Acontext: Auth = React.useContext(AuthContext);
 
   useEffect(() => {
-    if (Ucontext) {      
+    if (Ucontext) {
       navigation.navigate('Dashboard');
     }
-  },[Ucontext])
-  
-  
-  
- 
-  
-  const handleLogin = async () => {    
-      await signInWithEmailAndPassword(Acontext,username, password)
-        .then((userCredential) => {                
+  }, [Ucontext])
+
+
+
+
+
+  const handleLogin = async () => {
+    await signInWithEmailAndPassword(Acontext, username, password)
+      .then((userCredential) => {
         handleVerification(userCredential)
       })
       .catch(error => {
@@ -47,18 +47,18 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
       });
   }
 
-  const handleVerification = (user : UserCredential) => {    
-    
+  const handleVerification = (user: UserCredential) => {
+
     if (user.user.emailVerified) {
       setUsername('');
-      setPassword('');     
-     
+      setPassword('');
+
       navigation.navigate('Dashboard');
     } else {
-      alert('Email not verified! \nPlease verify before logging in')        
-    }    
+      alert('Email not verified! \nPlease verify before logging in')
+    }
   }
-  
+
   return (
 
     <View style={styles.container}>
@@ -66,23 +66,23 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <TextInput placeholder='Email Address' placeholderTextColor="white" defaultValue={username} onChangeText={(email) => setUsername(email.trim())} style={styles.input} />
       <TouchableOpacity>
-              <Text style={{marginLeft: 150, fontFamily: 'monospace'}}>Forgot Email?</Text>
+        <Text style={{ marginLeft: 150, fontFamily: 'monospace' }}>Forgot Email?</Text>
 
       </TouchableOpacity>
-      
-      <TextInput placeholder= "Password" placeholderTextColor="white" defaultValue={password} onChangeText={(password) => setPassword(password)} secureTextEntry={true} style={styles.input} />
-    
-     <TouchableOpacity>
-             <Text style = {styles.textStyle}>Forgot Password?</Text>
-     </TouchableOpacity>
-     
+
+      <TextInput placeholder="Password" placeholderTextColor="white" defaultValue={password} onChangeText={(password) => setPassword(password)} secureTextEntry={true} style={styles.input} />
+
+      <TouchableOpacity>
+        <Text style={styles.textStyle}>Forgot Password?</Text>
+      </TouchableOpacity>
+
 
       <TouchableOpacity style={styles.button} onPress={() => handleLogin()}>
-        <Text style={{fontFamily: 'monospace'}}>Login</Text>
+        <Text style={{ fontFamily: 'monospace' }}>Login</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style = {{marginTop: 20, fontFamily: 'monospace'}}> Not registered?</Text>
+        <Text style={{ marginTop: 20, fontFamily: 'monospace' }}> Not registered?</Text>
       </TouchableOpacity>
     </View>
   );
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
 
-  button:{
+  button: {
     backgroundColor: '#CF9FFF',
     padding: 20,
     borderRadius: 25,
@@ -136,6 +136,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#CF9FFF',
   },
 
-  
- 
+
+
 });

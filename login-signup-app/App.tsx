@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { API, AUTH, PROJECT, STORAGE, MESSAGE, APP, MEASUREMENT, DATABASE} from '@env'
+import { API, AUTH, PROJECT, STORAGE, MESSAGE, APP, MEASUREMENT, DATABASE } from '@env'
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
@@ -28,28 +28,28 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const data = getFirestore(app);
 
-import {getAuth, onAuthStateChanged, User,  } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User, } from 'firebase/auth';
 import React from 'react';
 
 export default function App() {
   LogBox.ignoreLogs(['Require', 'AsyncStorage ', 'Event', 'View']);
   const isLoadingComplete = useCachedResources();
-  const colorScheme = useColorScheme();  
-  
+  const colorScheme = useColorScheme();
+
   const [user, setUser] = useState<User | undefined>();
-  const auth = getAuth(); 
+  const auth = getAuth();
 
   if (app) {
     onAuthStateChanged(auth, (user) => {
       if (user != null) {
-        setUser(user)        
+        setUser(user)
       }
-      
+
     });
   }
-  
-   
-  
+
+
+
   if (!isLoadingComplete || !app) {
     return null;
   } else {

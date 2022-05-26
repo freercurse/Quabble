@@ -9,12 +9,12 @@ export default function Register() {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const Acontext: Auth = useContext(AuthContext)
-  
-  
-  const handleRegister = async () => {    
-      await createUserWithEmailAndPassword(Acontext,username, password)
+
+
+  const handleRegister = async () => {
+    await createUserWithEmailAndPassword(Acontext, username, password)
       .then((userCredential) => {
-        alert('User account created \nplease verify your email to use the app')        
+        alert('User account created \nplease verify your email to use the app')
         setUsername('');
         setPassword('');
         sendEmailVerification(userCredential.user)
@@ -33,7 +33,7 @@ export default function Register() {
   }
 
   const handleVerification = () => {
-    
+
     if (Acontext.currentUser && !Acontext.currentUser.emailVerified) {
       sendEmailVerification(Acontext.currentUser)
         .then(() => {
@@ -48,11 +48,11 @@ export default function Register() {
     else {
       alert('Please attempt to login first')
     }
-    
-    
+
+
   }
-  
-  
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Email Address</Text>

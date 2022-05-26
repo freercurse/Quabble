@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Button } from 'react-native';
 import Space from './Space';
 
 
-export default function Board(props: any) { 
+export default function Board(props: any) {
   return (
     <View style={boardStyle.container}>
       <Button

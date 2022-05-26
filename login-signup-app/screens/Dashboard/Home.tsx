@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import {Button,Platform, Pressable, StyleSheet, TextInput, Image, LogBox } from 'react-native';
+import { Button, Platform, Pressable, StyleSheet, TextInput, Image, LogBox } from 'react-native';
 import { AuthContext, DataContext, UserContext } from '../../navigation/index';
 
 import { Text, View } from '../../components/Themed';
@@ -8,8 +8,8 @@ import { RootTabScreenProps } from '../../types';
 import { Auth, updateProfile, User } from 'firebase/auth';
 import { Firestore } from 'firebase/firestore';
 
-import { ConfirmDialog,ProgressDialog } from 'react-native-simple-dialogs';
-import {launchImageLibraryAsync, MediaTypeOptions, requestMediaLibraryPermissionsAsync, ImagePickerResult} from 'expo-image-picker';
+import { ConfirmDialog, ProgressDialog } from 'react-native-simple-dialogs';
+import { launchImageLibraryAsync, MediaTypeOptions, requestMediaLibraryPermissionsAsync, ImagePickerResult } from 'expo-image-picker';
 import { ref, getStorage, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 
@@ -17,17 +17,17 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
   const Acontext: Auth = React.useContext(AuthContext);
   const Ucontext: User = React.useContext(UserContext);
   const Dcontext: Firestore = React.useContext(DataContext);
-  
+
   const [name, setUsername] = React.useState('')
   const [loading, setLoading] = React.useState(false);
   const [photo, setPhoto] = React.useState('');
   const [UNVis, setUNVis] = React.useState(false)
   LogBox.ignoreLogs([`Setting a timer for a long period`]);
-  
-  
+
+
   const onSetPhone = () => {
     alert('this user wants to change there Phone')
-  }  
+  }
 
   const pickImage = async () => {
     let status = await requestMediaLibraryPermissionsAsync();
@@ -35,7 +35,7 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
       alert('You need to enable permissions to use this feature');
       return
     }
-    
+
     // No permissions request is necessary for launching the image library
     let result = await launchImageLibraryAsync({
       mediaTypes: MediaTypeOptions.Images,
@@ -48,26 +48,26 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
   }
 
   const handleImagePicked = async (pickerResult: ImagePickerResult) => {
-    try {      
+    try {
 
       if (!pickerResult.cancelled) {
-        
-        await uploadImageAsync(pickerResult.uri)   
-        
-      }else {
+
+        await uploadImageAsync(pickerResult.uri)
+
+      } else {
         setLoading(false);
       }
     } catch (e) {
-     
+
       setLoading(false);
       alert(e);
-      
-    } 
-    
-  };  
-    
-  const uploadImageAsync = async (pickerResult: string ) => {
-    
+
+    }
+
+  };
+
+  const uploadImageAsync = async (pickerResult: string) => {
+
     const blob: Blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -77,14 +77,14 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
         reject(new TypeError("Network request failed"));
       };
       xhr.responseType = "blob";
-      xhr.open("GET", pickerResult,true);
+      xhr.open("GET", pickerResult, true);
       xhr.send(null);
     });
-    
+
     const storage = getStorage(Dcontext.app, 'gs://quabble-7fced.appspot.com/')
 
-    const Avatar = ref(storage, 'avatar/' + Ucontext.uid + '.jpg')  
-    
+    const Avatar = ref(storage, 'avatar/' + Ucontext.uid + '.jpg')
+
     const uploadTask = uploadBytesResumable(Avatar, blob)
 
     uploadTask.on('state_changed',
@@ -116,33 +116,33 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
           })
           setLoading(false);
           alert('image successfully loaded')
-          
+
         });
       }
     );
-    
-    
-    
+
+
+
   }
-  
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => pickImage()}>
         {Ucontext.photoURL && <Image source={{ uri: Ucontext.photoURL }} style={{ width: 250, height: 188 }} /> || <Text style={styles.profile}> Profile image is not set, click to change.</Text>}
       </Pressable>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />      
+      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <Text style={styles.title}>Welcome to your Home page</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Text style={styles.profile}>{Ucontext.email}</Text>      
+      <Text style={styles.profile}>{Ucontext.email}</Text>
       <Pressable onPress={() => setUNVis(true)}>
         <Text style={styles.profile}>{Ucontext.displayName ? Ucontext.displayName : 'Username is not set, click to change.'}</Text>
-      </Pressable>      
+      </Pressable>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Button title="Sign Out" onPress={async ()  => { await Acontext.signOut(), alert("You have been logged out"), navigation.navigate('Root') }} />
+      <Button title="Sign Out" onPress={async () => { await Acontext.signOut(), alert("You have been logged out"), navigation.navigate('Root') }} />
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-      
+
       {/* Dialog boxes controlling profile changes */}
       {loading && <ProgressDialog
         visible={loading}
@@ -150,8 +150,8 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
         message="Please, wait..."
         activityIndicatorColor={'black'}
       />}
-      { UNVis &&<ConfirmDialog
-        title="Enter your new Username."        
+      {UNVis && <ConfirmDialog
+        title="Enter your new Username."
         visible={UNVis}
         onTouchOutside={() => setUNVis(false)}
         positiveButton={{
@@ -183,14 +183,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   Dcontainer: {
-    backgroundColor: '#fff',    
+    backgroundColor: '#fff',
     alignItems: 'center',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
-  input: {    
+  input: {
     width: '60%',
     color: 'black',
     borderColor: 'black',
@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
     height: 45,
     padding: 13,
     textAlign: 'center',
-    
-    
+
+
   },
   profile: {
     fontSize: 15,

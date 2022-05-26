@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GiftedChat, IMessage, Message } from 'react-native-gifted-chat';
-import {collection, addDoc, orderBy, query, onSnapshot, Firestore, DocumentData} from 'firebase/firestore';
+import { collection, addDoc, orderBy, query, onSnapshot, Firestore, DocumentData } from 'firebase/firestore';
 
 import { Auth, User } from 'firebase/auth';
 import { RootTabScreenProps } from '../../types';
@@ -11,10 +11,10 @@ import { AuthContext, DataContext, UserContext } from '../../navigation';
 
 export default function Chat({ navigation, }: RootTabScreenProps<'Chat'>) {
   const Acontext: Auth = React.useContext(AuthContext);
-  const Ucontext: User = React.useContext(UserContext);  
+  const Ucontext: User = React.useContext(UserContext);
   const Dcontext: Firestore = React.useContext(DataContext);
-  
-    
+
+
   const [messages, setMessages] = useState<IMessage | DocumentData | any>([]);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Chat({ navigation, }: RootTabScreenProps<'Chat'>) {
 
     const unsubscribe = onSnapshot(q, querySnapshot => {
       setMessages(
-        querySnapshot.docs.map(doc => ({          
+        querySnapshot.docs.map(doc => ({
           _id: doc.data()._id,
           createdAt: doc.data().createdAt.toDate(),
           text: doc.data().text,
@@ -34,24 +34,24 @@ export default function Chat({ navigation, }: RootTabScreenProps<'Chat'>) {
 
     return () => unsubscribe();
   }, []);
-  
+
   const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages : any) => GiftedChat.append(previousMessages, messages))
+    setMessages((previousMessages: any) => GiftedChat.append(previousMessages, messages))
     const { _id, createdAt, text, user } = messages[0];
-    addDoc(collection(Dcontext, 'Messages'), {      
+    addDoc(collection(Dcontext, 'Messages'), {
       _id,
       createdAt,
       text,
       user
     });
   }, []);
-  
+
   return (
     <View style={styles.container}>
       <GiftedChat
         messages={messages}
-        renderUsernameOnMessage={true}        
-        showAvatarForEveryMessage={true}        
+        renderUsernameOnMessage={true}
+        showAvatarForEveryMessage={true}
         renderAvatarOnTop={true}
         onSend={messages => onSend(messages)}
         user={{

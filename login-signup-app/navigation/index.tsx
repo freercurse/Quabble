@@ -35,8 +35,8 @@ export const DataContext = React.createContext<Firestore | undefined>(undefined)
 export const DBContext = React.createContext<Database | undefined>(undefined);
 
 
-export default function Navigation({ colorScheme, auth, user, data, database }: { colorScheme: ColorSchemeName, auth: Auth, user: User, data: Firestore, database : Database }) {
-   
+export default function Navigation({ colorScheme, auth, user, data, database }: { colorScheme: ColorSchemeName, auth: Auth, user: User, data: Firestore, database: Database }) {
+
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
@@ -61,23 +61,23 @@ export default function Navigation({ colorScheme, auth, user, data, database }: 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />        
-        <Stack.Screen name="Dashboard" component={DashboardBottomTabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-        <Stack.Group screenOptions={{ presentation: 'modal' }}>
-          <Stack.Screen name="FAQ" component={FAQ} />
-        </Stack.Group>
-      </Stack.Navigator>
-      )   
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Dashboard" component={DashboardBottomTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen name="FAQ" component={FAQ} />
+      </Stack.Group>
+    </Stack.Navigator>
+  )
 }
 
-function signInPage(){
-  return(
-    <Stack.Navigator screenOptions={{headerShown: false}}>
-      
+function signInPage() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+
     </Stack.Navigator>
   )
 }
@@ -90,21 +90,21 @@ function signInPage(){
 
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
-function BottomTabNavigator() { 
-   
-  const colorScheme = useColorScheme();  
+function BottomTabNavigator() {
+
+  const colorScheme = useColorScheme();
   return (
-    
+
     <BottomTab.Navigator
       initialRouteName="Login"
-      screenOptions={{ 
+      screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
-        
+
       }}>
       <BottomTab.Screen
         name="Login"
         component={Login}
-        options={({ navigation}: RootTabScreenProps<'Login'>) => ({
+        options={({ navigation }: RootTabScreenProps<'Login'>) => ({
           title: 'Login',
           tabBarIcon: ({ color }) => <TabBarIcon name="login" color={color} />,
           headerRight: () => (
@@ -122,20 +122,20 @@ function BottomTabNavigator() {
           ),
         })} />
       <BottomTab.Screen
-            name="Register"
-            component={Register}
-            options={() => ({
-              title: 'Register',
-              tabBarIcon: ({ color }) => <TabBarIcon name="adduser" color={color} />
-            })} />
-      
+        name="Register"
+        component={Register}
+        options={() => ({
+          title: 'Register',
+          tabBarIcon: ({ color }) => <TabBarIcon name="adduser" color={color} />
+        })} />
+
     </BottomTab.Navigator>
   );
 }
 
 function DashboardBottomTabNavigator() {
   const colorScheme = useColorScheme();
-  
+
   return (
     <BottomTab.Navigator
       initialRouteName="Home"
@@ -147,31 +147,31 @@ function DashboardBottomTabNavigator() {
         component={Home}
         options={({ navigation }: RootTabScreenProps<'Home'>) => ({
           title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="profile" color={color} />,          
+          tabBarIcon: ({ color }) => <TabBarIcon name="profile" color={color} />,
         })} />
       <BottomTab.Screen
         name="Chat"
         component={Chat}
         options={({ navigation }: RootTabScreenProps<'Chat'>) => ({
           title: 'Chat',
-          tabBarIcon: ({ color }) => <TabBarIcon name="message1" color={color} />,          
+          tabBarIcon: ({ color }) => <TabBarIcon name="message1" color={color} />,
         })} />
       <BottomTab.Screen
         name="Game"
         component={Game}
         options={({ navigation }: RootTabScreenProps<'Game'>) => ({
           title: 'Tic-Tac-Toe',
-          tabBarIcon: ({ color }) => <TabBarIcon name="play" color={color} />,          
+          tabBarIcon: ({ color }) => <TabBarIcon name="play" color={color} />,
         })} />
       <BottomTab.Screen
         name="List"
         component={List}
         options={({ navigation }: RootTabScreenProps<'List'>) => ({
           title: 'ToDo List',
-          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,          
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
         })} />
-            
-      
+
+
     </BottomTab.Navigator>
   );
 }
