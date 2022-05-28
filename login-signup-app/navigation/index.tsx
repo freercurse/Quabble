@@ -27,6 +27,7 @@ import Home from '../screens/Dashboard/Home';
 import { Firestore } from 'firebase/firestore';
 import { Database } from 'firebase/database';
 import List from '../screens/Dashboard/List';
+import ListItem from '../components/List/ListItem';
 
 
 export const AuthContext = React.createContext<Auth | undefined>(undefined);
@@ -69,15 +70,8 @@ function RootNavigator() {
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="FAQ" component={FAQ} />
+        <Stack.Screen name="ListItem" component={ListItem} />
       </Stack.Group>
-    </Stack.Navigator>
-  )
-}
-
-function signInPage() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-
     </Stack.Navigator>
   )
 }
@@ -98,8 +92,7 @@ function BottomTabNavigator() {
     <BottomTab.Navigator
       initialRouteName="Login"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-
+        tabBarActiveTintColor: Colors[colorScheme].tint
       }}>
       <BottomTab.Screen
         name="Login"

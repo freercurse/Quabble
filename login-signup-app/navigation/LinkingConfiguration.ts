@@ -37,6 +37,7 @@ const linking: LinkingOptions<RootStackParamList> = {
       },
       FAQ: 'FAQ',
       NotFound: '*',
+      ListItem: 'ListItem'
     },
   },
 };

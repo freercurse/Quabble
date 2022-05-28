@@ -19,6 +19,7 @@ export type RootStackParamList = {
   Dashboard: NavigatorScreenParams<RootTabParamList> | undefined;
   FAQ: undefined;
   NotFound: undefined;  
+  ListItem: { id: string };  
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

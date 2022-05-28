@@ -8,6 +8,7 @@ import { getDatabase } from "firebase/database";
 import { initializeApp } from 'firebase/app';
 import { Bytes, getFirestore } from "firebase/firestore";
 import { LogBox, StyleSheet } from 'react-native';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 
 import { useState } from 'react';
@@ -55,7 +56,9 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} auth={auth} user={user} data={data} database={database} />
+        <PaperProvider>        
+          <Navigation colorScheme={colorScheme} auth={auth} user={user} data={data} database={database} />
+        </PaperProvider>
         <StatusBar />
       </SafeAreaProvider>
 
