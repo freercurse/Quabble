@@ -3,11 +3,12 @@ import { View, Text } from "../../components/Themed";
 import { SectionList, Image, StyleSheet, TouchableOpacity, NativeTouchEvent } from "react-native"
 import { nanoid } from 'nanoid/non-secure'
 import { DataContext, UserContext } from "../../navigation";
-import { collection, doc, DocumentData, Firestore, onSnapshot, orderBy, query, setDoc, QuerySnapshot, updateDoc } from "firebase/firestore";
+import { collection, doc, DocumentData, Firestore, onSnapshot, orderBy, query, setDoc, QuerySnapshot, updateDoc, getDocs, deleteDoc, DocumentReference } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { Checkbox } from 'react-native-paper';
 import AntDesign from "@expo/vector-icons/build/AntDesign";
 import { RootTabScreenProps} from "../../types";
+import { ConfirmDialog } from "react-native-simple-dialogs";
 
 
 
@@ -16,7 +17,9 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
   const Ucontext: User = React.useContext(UserContext);
 
   const [records, setRecords] = useState<DocumentData>([])
-  const [reference, setReference] = useState('')
+  const [publicRecords, setPublicRecords] = useState<DocumentData>([])
+  const [prompt, setPrompt] = useState(false)
+  const [share, setShare] = useState<any>()
   const [touchX, setTouchX] = useState<number>(0)
 
 
@@ -38,6 +41,26 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
 
     return () => unsubscribe();
   }, [])
+  
+  useEffect(() => {
+    const collectionRef = collection(Dcontext, 'Lists/Public/Records' );
+    const q = query(collectionRef, orderBy('createdAt', 'desc'));
+    
+    const unsubscribe = onSnapshot(q, (querySnapshot: QuerySnapshot) => {
+     let Rec : DocumentData = [];
+     querySnapshot.docs.map(doc => {
+      if(!doc.data().Registered.includes(Ucontext.displayName)){
+        Rec.push(doc.data())
+      }      
+      
+    })
+      setPublicRecords(Rec)
+
+    }, (error) => { console.log(error) });
+
+
+    return () => unsubscribe();
+  }, [])  
 
   const initalSetup = () => {
     let id = nanoid()
@@ -53,13 +76,50 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
     })
   }
 
+  const deleteRecord = (item:any) => {
+
+    let Reg = item.Registered
+    
+    if(!item.shared){
+
+      deleteDoc(doc(Dcontext, 'Lists/Users/' + Ucontext.uid + '/Records/Private/' + item.id))
+    } else {      
+      Reg.push(Ucontext.displayName)
+
+      updateDoc(doc(Dcontext, 'Lists/Public/Records/' + item.id), {
+        Registered: Reg
+      })
+    }   
+
+  }
+
+  const shareRecord = () => {
+
+    setDoc(doc(Dcontext, 'Lists/Public/Records/' + share.id), {
+      id: share.id,
+      Title: share.Title,
+      Message: share.Message,
+      Completed: share.Completed,
+      shared: true,
+      createdAt: share.createdAt,
+      Registered : [Ucontext.displayName]
+    })
+    
+    alert("Note has been shared")
+  }
+
   const getItems = (item: any) => {
     return (
       <View
         onTouchStart={e => setTouchX(e.nativeEvent.pageX)}
         onTouchEnd={e => {
-          if (touchX - e.nativeEvent.pageX > 10)
-            console.log('Swiped up')
+          if (touchX - e.nativeEvent.pageX > 20){
+            setShare(item)
+            if(!item.shared) setPrompt(true)
+          } else if (e.nativeEvent.pageX - touchX > 20){
+            deleteRecord(item)
+          }
+            
         }}      
       >      
         <TouchableOpacity style={styles.item} onLongPress={() => { navigation.navigate("ListItem", {id:item.id}) } } >
@@ -71,9 +131,10 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
             <Checkbox
               status={item.Completed ? 'checked' : 'unchecked'}
               onPress={() => {
+                !item.shared ?
                 updateDoc(doc(Dcontext, 'Lists/Users/' + Ucontext.uid + '/Records/Private/' + item.id), {
                   Completed: !item.Completed,
-                })
+                }): alert("This is a public record you cannot change the status")
               }}
             />
           </View>
@@ -98,7 +159,7 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
       <SectionList
         sections={[
           { title: 'Private', data: records.filter((x: { shared: boolean; }) => x.shared == false) },
-          { title: 'Shared', data: records.filter((x: { shared: boolean; }) => x.shared == true) }
+          { title: 'Shared', data: publicRecords.filter((x: { shared: boolean; }) => x.shared == true) }
         ]}
         renderItem={({ item }) => getItems(item)}
         renderSectionHeader={({ section }) => getTitles(section)}
@@ -110,7 +171,23 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
         style={styles.touchableOpacityStyle}          
         >
         <AntDesign size={50} name="pluscircle" />
-      </TouchableOpacity>      
+      </TouchableOpacity>    
+
+      {prompt && <ConfirmDialog
+        visible={prompt}
+        title="Share Publicly!"
+        onTouchOutside={() => setPrompt(false)}
+        positiveButton={{
+          title: "Share",
+          onPress: () => {
+            shareRecord()
+            setPrompt(false)
+          }
+        }} >
+        <View style={styles.paragraph} >
+          <Text style={styles.paragraph}>Are you sure you want to share this not publicly with everyone using this APP!!</Text>
+        </View>
+      </ConfirmDialog>}     
     </View>
   )
 }
@@ -123,11 +200,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  paragraph: {
+    margin: 10,
+    fontSize: 18,    
+    textAlign: 'left',
+    color: 'black',
+    backgroundColor:'white',
+    borderColor: 'black'
+  },
   item: {
     flex: 1,    
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
-    paddingHorizontal: 35,
+    paddingHorizontal: 60,
     paddingTop: 5,
     paddingBottom: 20,
     borderWidth: 3,
@@ -141,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-evenly',
-      
+    marginLeft:10
   },
   title: {
     fontSize: 20,
@@ -166,5 +251,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     right: 25,
     bottom: 25,
-  },  
+  }
+   
 })

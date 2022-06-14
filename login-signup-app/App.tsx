@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { API, AUTH, PROJECT, STORAGE, MESSAGE, APP, MEASUREMENT, DATABASE } from '@env'
+import { API, AUTH, PROJECT, STORAGE, MESSAGE, APP, MEASUREMENT, DATABASE, } from '@env'
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
@@ -11,8 +11,7 @@ import { LogBox, StyleSheet } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 
-import { useState } from 'react';
-
+import React, { useState } from 'react';
 
 const firebaseConfig = {
   apiKey: API,
@@ -30,7 +29,6 @@ const database = getDatabase(app);
 const data = getFirestore(app);
 
 import { getAuth, onAuthStateChanged, User, } from 'firebase/auth';
-import React from 'react';
 
 export default function App() {
   LogBox.ignoreLogs(['Require', 'AsyncStorage ', 'Event', 'View']);
