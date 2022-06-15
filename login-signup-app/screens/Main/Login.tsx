@@ -4,11 +4,6 @@ import { signInWithEmailAndPassword, Auth, UserCredential, User } from 'firebase
 import { Text, View } from '../../components/Themed';
 import { RootTabScreenProps } from '../../types';
 import { AuthContext, UserContext } from '../../navigation';
-import * as SecureStore from 'expo-secure-store';
-
-import Register from './Register';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
   LogBox.ignoreLogs(['Require cycle:', 'AsyncStorage ']);
@@ -20,14 +15,12 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
   const Acontext: Auth = React.useContext(AuthContext);
 
   useEffect(() => {
-    if (Ucontext) {
+    if (Ucontext && Ucontext.emailVerified) {
       navigation.navigate('Dashboard');
+    }else if(Ucontext){
+      alert("please verify your email address")
     }
   }, [Ucontext])
-
-
-
-
 
   const handleLogin = async () => {
     await signInWithEmailAndPassword(Acontext, username, password)
@@ -42,8 +35,7 @@ export default function Login({ navigation, }: RootTabScreenProps<'Login'>) {
         if (error.code === 'auth/invalid-email') {
           alert('That email address is invalid!');
         }
-
-        console.error(error);
+        
       });
   }
 

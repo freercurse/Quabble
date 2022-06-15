@@ -56,9 +56,9 @@ export default function Register() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Email Address</Text>
-      <TextInput defaultValue={username} onChangeText={(email) => setUsername(email)} style={styles.input} />
+      <TextInput defaultValue={username} onChangeText={(email) => setUsername(email.trim())} style={styles.input} />
       <Text style={styles.title}>Password</Text>
-      <TextInput defaultValue={password} onChangeText={(password) => setPassword(password)} secureTextEntry={true} style={styles.input} />
+      <TextInput defaultValue={password} onChangeText={(password) => setPassword(password.trim())} secureTextEntry={true} style={styles.input} />
       <Button onPress={() => handleRegister()} title="Register" />
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <Button onPress={() => handleVerification()} title="Resend Verification" />

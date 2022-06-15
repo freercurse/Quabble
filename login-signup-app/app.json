@@ -7,7 +7,7 @@
       },
       "package": "host.quabble.client",
       "permissions": [],
-      "versionCode": 14
+      "versionCode": 15
     },
     "plugins": [
       [
