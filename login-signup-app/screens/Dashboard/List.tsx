@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, Text } from "../../components/Themed";
-import { SectionList, Image, StyleSheet, TouchableOpacity, NativeTouchEvent } from "react-native"
+import { SectionList, StyleSheet, TouchableOpacity } from "react-native"
 import { nanoid } from 'nanoid/non-secure'
 import { DataContext, UserContext } from "../../navigation";
-import { collection, doc, DocumentData, Firestore, onSnapshot, orderBy, query, setDoc, QuerySnapshot, updateDoc, getDocs, deleteDoc, DocumentReference } from "firebase/firestore";
+import { collection, doc, DocumentData, Firestore, onSnapshot, orderBy, query, setDoc, QuerySnapshot, updateDoc, deleteDoc } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { Checkbox } from 'react-native-paper';
 import AntDesign from "@expo/vector-icons/build/AntDesign";
