@@ -122,7 +122,7 @@ export default function List({ navigation }: RootTabScreenProps<'List'>) {
             
         }}      
       >      
-        <TouchableOpacity style={styles.item} onLongPress={() => { navigation.navigate("ListItem", {id:item.id}) } } >
+        <TouchableOpacity style={styles.item} onLongPress={() => { !item.shared ? navigation.navigate("ListItem", {id:item.id}) :alert("This is a public record you cannot edit the note")  } } >
           <Text style={styles.title}>{item.Title}</Text>
           <View style={styles.checkbox}>
             <Text>

@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { API, AUTH, PROJECT, STORAGE, MESSAGE, APP, MEASUREMENT, DATABASE, } from '@env'
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
@@ -14,14 +13,14 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import React, { useState } from 'react';
 
 const firebaseConfig = {
-  apiKey: API,
-  authDomain: AUTH,
-  projectId: PROJECT,
-  storageBucket: STORAGE,
-  messagingSenderId: MESSAGE,
-  appId: APP,
-  measurementId: MEASUREMENT,
-  databaseURL: DATABASE
+  apiKey: "AIzaSyCtaianGPpG03qcyE3YPY5oay3SvXkq8P4",
+  authDomain: "quabble-7fced.firebaseapp.com",
+  databaseURL: "https://quabble-7fced-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "quabble-7fced",
+  storageBucket: "quabble-7fced.appspot.com",
+  messagingSenderId: "86011789417",
+  appId: "1:86011789417:web:a4d14934164165fb5922f8",
+  measurementId: "G-BL9KXEWCBV"
 };
 
 const app = initializeApp(firebaseConfig);
