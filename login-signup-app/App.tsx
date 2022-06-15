@@ -6,7 +6,7 @@ import Navigation from './navigation';
 import { getDatabase } from "firebase/database";
 import { initializeApp } from 'firebase/app';
 import { Bytes, getFirestore } from "firebase/firestore";
-import { LogBox, StyleSheet } from 'react-native';
+import {LogBox} from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 
@@ -30,11 +30,12 @@ const data = getFirestore(app);
 import { getAuth, onAuthStateChanged, User, } from 'firebase/auth';
 
 export default function App() {
+  
   LogBox.ignoreLogs(['Require', 'AsyncStorage ', 'Event', 'View']);
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
 
-  const [user, setUser] = useState<User | undefined>();
+  const [user, setUser] = useState<User>();
   const auth = getAuth();
 
   if (app) {

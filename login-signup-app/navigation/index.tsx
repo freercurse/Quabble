@@ -30,10 +30,10 @@ import List from '../screens/Dashboard/List';
 import ListItem from '../components/List/ListItem';
 
 
-export const AuthContext = React.createContext<Auth | undefined>(undefined);
-export const UserContext = React.createContext<User | undefined>(undefined);
-export const DataContext = React.createContext<Firestore | undefined>(undefined);
-export const DBContext = React.createContext<Database | undefined>(undefined);
+export const AuthContext = React.createContext<Auth>(undefined!);
+export const UserContext = React.createContext<User>(undefined!);
+export const DataContext = React.createContext<Firestore>(undefined!);
+export const DBContext = React.createContext<Database>(undefined!);
 
 
 export default function Navigation({ colorScheme, auth, user, data, database }: { colorScheme: ColorSchemeName, auth: Auth, user: User, data: Firestore, database: Database }) {
