@@ -127,49 +127,7 @@ export default function Home({ navigation, }: RootTabScreenProps<'Chat'>) {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => pickImage()}>
-        {Ucontext.photoURL && <Image source={{ uri: Ucontext.photoURL }} style={{ width: 250, height: 188 }} /> || <Text style={styles.profile}> Profile image is not set, click to change.</Text>}
-      </Pressable>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Text style={styles.title}>Welcome to your Home page</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Text style={styles.profile}>{Ucontext.email}</Text>
-      <Pressable onPress={() => setUNVis(true)}>
-        <Text style={styles.profile}>{Ucontext.displayName ? Ucontext.displayName : 'Username is not set, click to change.'}</Text>
-      </Pressable>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Button title="Sign Out" onPress={async () => { await Acontext.signOut(), alert("You have been logged out"), navigation.navigate('Root') }} />
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-
-      {/* Dialog boxes controlling profile changes */}
-      {loading && <ProgressDialog
-        visible={loading}
-        title="Uploading image"
-        message="Please, wait..."
-        activityIndicatorColor={'black'}
-      />}
-      {UNVis && <ConfirmDialog
-        title="Enter your new Username."
-        visible={UNVis}
-        onTouchOutside={() => setUNVis(false)}
-        positiveButton={{
-          title: "OK",
-          onPress: () => {
-            updateProfile(Ucontext, {
-              displayName: name,
-            }).then(() => {
-              alert('Your nickname has been changed to ' + name)
-            }).catch((error) => {
-              alert(error);
-            }), setUNVis(false), setUsername('')
-          }
-        }} >
-        <View style={styles.Dcontainer}>
-          <TextInput defaultValue={name} onChangeText={(name: string) => setUsername(name)} style={styles.input} />
-        </View>
-      </ConfirmDialog>}
+  
     </View>
   );
 }
